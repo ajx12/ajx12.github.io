@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple HTML Page</title>
+    <style>
+        h1 {text-align: center;}
+        h2 {text-align: center;}
+        p {text-align: center;}
+        div {text-align: center;}
+        footer{ 
+       position: fixed;     
+       text-align: center;    
+       bottom: 0px; 
+       width: 100%;
+       }
+       body {background-color: #d3cac8;}
+    </style>
 </head>
 <body>
     <header>
@@ -11,15 +24,17 @@
     </header>
     <nav>
         <ul>
-            <li><a href="#home">Home</a></li>
+            <li><a href="#welcome">Welcome</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
     <main>
-        <section id="home">
-            <h2>Home</h2>
-            <p>This is the home section of the page.</p>
+        <section id="welcome">
+            <div style="text-align: center; background-color: #f92f02a8; width: 450px; height: 175px; margin:auto;">
+            <h2>Welcome!</h2>
+            <p>This is a site I like to add to in my own time! I intend to build several sections to this site, including: some games, some programming showcases, and perhaps convert it into a sort of blog for new and interesting news within the cyber security world.</p>
+            </div>
         </section>
         <section id="about">
             <h2>About</h2>
@@ -31,7 +46,7 @@
         </section>
     </main>
     <footer>
-        <p>Alex Hyland Site</p>
+        <p>An Alexander Hyland Site</p>
     </footer>
 </body>
 </html>
