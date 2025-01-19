@@ -74,12 +74,12 @@ function DrawCards() {
         }
 
         let currCard = hand[i]; //Grab the current new card
-        let currCardPath = currCard[0]; // Get the path to the image of the card
+        let currCardPath = currCard.pngPath; // Get the path to the image of the card
         let currCardHtmlObject = handHtmlObjects[i]; //Grab the HTML object of the card 
 
         let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
         currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
-        console.log("Image source is ", currCardImage.src);
+        console.log("Image source is ", currCardPath);
         currCardImage.alt = currCardPath; // add the alt so when you hover over, it tells you the value
 
         currCardHtmlObject.innerHTML = ''; // clear any previous card image
@@ -132,6 +132,7 @@ function initializeDeck() {
         for (const rank of ranks) {
             let pngPath = (rank.concat(suit)).concat(".png");
             deck.push({ pngPath, rank, suit });
+            console.log(deck[0]);
         }
     }
     return deck;
