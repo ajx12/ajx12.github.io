@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balatro Simplified</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Scoring Pane -->
+        <div class="scoring-pane">
+            <p>Score required: <span id="score-required">x</span></p>
+            <p>Current Score: <span id="current-score">y</span></p>
+            <p>Submitted Hand Score:</p>
+            <ul>
+                <li>Credits: <span id="credits">a</span></li>
+                <li>Multiplier: <span id="multiplier">b</span></li>
+                <li>Total: <span id="total-score">c</span></li>
+            </ul>
+            <p>Submits left: <span id="submits-left">4</span></p>
+            <p>Discards left: <span id="discards-left">3</span></p>
+        </div>
+
+        <!-- Game Board -->
+        <div class="game-board">
+            <!-- Joker Cards -->
+            <div class="joker-cards">
+                <div class="card-slot joker"></div>
+                <div class="card-slot joker"></div>
+                <div class="card-slot joker"></div>
+                <div class="card-slot joker"></div>
+            </div>
+
+            <!-- Submitted Hand -->
+            <div class="submitted-hand">
+                <div class="card-slot submitted"></div>
+                <div class="card-slot submitted"></div>
+                <div class="card-slot submitted"></div>
+                <div class="card-slot submitted"></div>
+                <div class="card-slot submitted"></div>
+            </div>
+
+            <!-- Hand -->
+            <div class="hand">
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+                <div class="card-slot hand-card"></div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="controls">
+            <button id="discard-button">Discard</button>
+            <button id="submit-button">Submit</button>
+            <p>Cards left in Deck: <span id="cards-left">44</span></p>
+        </div>
+    </div>
+</body>
+</html>
