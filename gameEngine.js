@@ -46,7 +46,7 @@ function DrawCards() {
 
         let currCard = hand[i]; //Grab the current new card
         let currCardPath = currCard.pngPath; // Get the path to the image of the card
-        let currCardHtmlObject = document.getElementById('hand-card-${i+1}'); //Grab the HTML object of the card 
+        let currCardHtmlObject = document.getElementById(`hand-card-${i+1}`); //Grab the HTML object of the card 
 
         let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
         currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
@@ -161,7 +161,7 @@ function selectCard(handIndex) {
     let newCardImage = cardImage.cloneNode(true); //copy the image from the hand card
     selectedSlot.innerHTML = ''; // clear any image from the selected slot card
     selectedSlot.appendChild(newCardImage); // add the image to the selected card slot
-    console.log('Card selected from hand: hand-card-${handIndex}');
+    console.log('Card selected from hand:', `hand-card-${handIndex}`);
 
 
     // Optionally disable the hand card to indicate it's been used
@@ -170,14 +170,14 @@ function selectCard(handIndex) {
 }
 
 function deselectCard(selectedIndex){
-    let selectedSlot = document.getElementById('submitted-card-${selectedIndex}');
+    let selectedSlot = document.getElementById(`submitted-card-${selectedIndex}`);
     let cardImage = selectedSlot.querySelector('img');
 
     if (!cardImage) return;
 
     let deselectedCard = selectedCards[selectedIndex-1];
     let originalHandCard = hand.indexOf(deselectedCard); //gets the index of the card from the hand array
-    let originalHandCardHTMLObject = document.getElementById('hand-card-${originalHandCard+1}');
+    let originalHandCardHTMLObject = document.getElementById(`hand-card-${originalHandCard+1}`);
 
     originalHandCardHTMLObject.style.pointerEvents = 'auto';
     originalHandCardHTMLObject.style.opacity = '1';
@@ -187,7 +187,7 @@ function deselectCard(selectedIndex){
     selectedSlot.innerHTML = '';
     
     refillSelectedSlots();
-    console.log('Card deselected from submitted-card-${selectedIndex}');
+    console.log('Card deselected from: ', `submitted-card-${selectedIndex}`);
 
 }
 
