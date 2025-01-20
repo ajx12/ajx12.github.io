@@ -3,40 +3,11 @@
 // Global Variables
 let deck = [];       // Array to represent the deck of cards
 let hand = [];       // Array to represent the player's hand#
-let handHtmlObjects = []; // Array to represent the html objects of the hand
-let submittedHand = []; // Array to represent the submitted hand
-let submittedHandHtmlObjects = []; // Array to represent the html objects of the submitted hand
+//let handHtmlObjects = []; // Array to represent the html objects of the hand
+let selectedCards = []; // Array to represent the submitted hand
+//let submittedHandHtmlObjects = []; // Array to represent the html objects of the submitted hand
 let round = 1;       // Current round number
 let cardsLeft = 52;  // Total cards left in the deck (52 by default)
-
-let handcard1 = document.getElementById('hand-card-1');
-handHtmlObjects.push(handcard1);
-let handcard2 = document.getElementById('hand-card-2');
-handHtmlObjects.push(handcard2);
-let handcard3 = document.getElementById('hand-card-3');
-handHtmlObjects.push(handcard3);
-let handcard4 = document.getElementById('hand-card-4'); // Retrieves the hand card objects from the html doc
-handHtmlObjects.push(handcard4); // Add each handcard html object to the array for easy reference.
-let handcard5 = document.getElementById('hand-card-5');
-handHtmlObjects.push(handcard5);
-let handcard6 = document.getElementById('hand-card-6');
-handHtmlObjects.push(handcard6);
-let handcard7 = document.getElementById('hand-card-7');
-handHtmlObjects.push(handcard7);
-let handcard8 = document.getElementById('hand-card-8');
-handHtmlObjects.push(handcard8);
-
-
-let submittedcard1 = document.getElementById('submitted-card-1');
-submittedHandHtmlObjects.push(submittedcard1);
-let submittedcard2 = document.getElementById('submitted-card-2');
-submittedHandHtmlObjects.push(submittedcard2);
-let submittedcard3 = document.getElementById('submitted-card-3');  // Retrieves the submitted card objects from the html doc
-submittedHandHtmlObjects.push(submittedcard3);
-let submittedcard4 = document.getElementById('submitted-card-4');
-submittedHandHtmlObjects.push(submittedcard4);
-let submittedcard5 = document.getElementById('submitted-card-5');
-submittedHandHtmlObjects.push(submittedcard5);
 
 let jokercard1 = document.getElementById('joker-card-1');
 let jokercard2 = document.getElementById('joker-card-2');
@@ -75,7 +46,7 @@ function DrawCards() {
 
         let currCard = hand[i]; //Grab the current new card
         let currCardPath = currCard.pngPath; // Get the path to the image of the card
-        let currCardHtmlObject = handHtmlObjects[i]; //Grab the HTML object of the card 
+        let currCardHtmlObject = document.getElementById('hand-card-${i+1}'); //Grab the HTML object of the card 
 
         let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
         currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
@@ -114,7 +85,7 @@ function NextRound() {
     round++;
     
     // Reset or modify round-specific settings as needed
-    submittedHand = [];
+    selectedCards = [];
     
     // Ensure hand is refilled
     ReplaceHand([]);
@@ -127,12 +98,14 @@ function initializeDeck() {
     const suits = ["h", "d", "c", "s"]; // Hearts, Diamonds, Clubs, Spades
     const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"];
     const deck = [];
+    let cardID = 0;
     
     for (const suit of suits) {
         for (const rank of ranks) {
             let pngPath = (rank.concat(suit)).concat(".png");
-            deck.push({ pngPath, rank, suit });
-            console.log(deck[0]);
+            deck.push({ pngPath, rank, suit, cardID });
+            console.log(deck[cardID]);
+            cardID++;
         }
     }
     return deck;
@@ -147,5 +120,106 @@ function shuffleDeck(deck) {
     console.log("Deck shuffled.");
 }
 
+function roundGameplayLoop(){
+    console.log("Round Started");
+
+    
+
+}
+
+
+// Add Event Listeners for Cards in the Hand
+function setupHandListeners() {
+    for (let i = 1; i <= 8; i++) {
+        const handCard = document.getElementById(`hand-card-${i}`);
+        handCard.addEventListener('click', () => selectCard(i));
+    }
+}
+
+// Add Event Listeners for Selected Cards (Submitted Hand)
+function setupSelectedListeners() {
+    for (let i = 1; i <= 5; i++) {
+        const selectedCard = document.getElementById(`submitted-card-${i}`);
+        selectedCard.addEventListener('click', () => deselectCard(i));
+    }
+}
+
+function selectCard(handIndex) {
+    const handCard = document.getElementById(`hand-card-${handIndex}`);
+    const cardImage = handCard.querySelector('img'); // Get the <img> inside the hand card
+
+    // If no image or max selected cards reached, do nothing
+    if (!cardImage || selectedCards.length >= 5) return;
+
+    // Find the next empty slot in the selected cards
+    const nextSlotIndex = selectedCards.length + 1; // 1-based index for submitted cards
+    const selectedSlot = document.getElementById(`submitted-card-${nextSlotIndex}`);
+
+    // Move the card to the selected pile
+    selectedCards.push(hand[handIndex-1]); //add to the selected cards array
+
+    let newCardImage = cardImage.cloneNode(true); //copy the image from the hand card
+    selectedSlot.innerHTML = ''; // clear any image from the selected slot card
+    selectedSlot.appendChild(newCardImage); // add the image to the selected card slot
+    console.log('Card selected from hand: hand-card-${handIndex}');
+
+
+    // Optionally disable the hand card to indicate it's been used
+    handCard.style.pointerEvents = 'none';
+    handCard.style.opacity = '.4';
+}
+
+function deselectCard(selectedIndex){
+    let selectedSlot = document.getElementById('submitted-card-${selectedIndex}');
+    let cardImage = selectedSlot.querySelector('img');
+
+    if (!cardImage) return;
+
+    let deselectedCard = selectedCards[selectedIndex-1];
+    let originalHandCard = hand.indexOf(deselectedCard); //gets the index of the card from the hand array
+    let originalHandCardHTMLObject = document.getElementById('hand-card-${originalHandCard+1}');
+
+    originalHandCardHTMLObject.style.pointerEvents = 'auto';
+    originalHandCardHTMLObject.style.opacity = '1';
+
+    selectedCards.splice(selectedIndex - 1, 1); // remove the card from the selected array
+
+    selectedSlot.innerHTML = '';
+    
+    refillSelectedSlots();
+    console.log('Card deselected from submitted-card-${selectedIndex}');
+
+}
+
+
+function refillSelectedSlots() {
+    const currentCards = [...selectedCards]; // Copy the current selected cards
+    selectedCards.length = 0; // Clear the original array
+
+    // Clear all selected slots
+    for (let i = 1; i <= 5; i++) {
+        const slot = document.getElementById(`submitted-card-${i}`);
+        slot.innerHTML = '';
+    }
+
+    // Re-add cards to the slots in order
+    currentCards.forEach(card => {
+        let index = currentCards.indexOf(card);
+        let slot = document.getElementById(`submitted-card-${index + 1}`);
+        let cardImage = document.createElement('img');
+        cardImage.src = card.pngPath; // Set the card image
+        cardImage.src = '/cards/'.concat(cardImage.src);
+        slot.appendChild(cardImage);
+        selectedCards.push(card); // Rebuild the selectedCards array
+    });
+}
+
+
+
+
 // Initialize the game when the script is loaded
 GameSetup();
+setupHandListeners();
+setupSelectedListeners();
+
+roundGameplayLoop();
