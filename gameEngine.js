@@ -51,7 +51,7 @@ function DrawCards() {
         let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
         currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
         console.log("Image source is ", currCardPath);
-        currCardImage.alt = currCardPath; // add the alt so when you hover over, it tells you the value
+        currCardImage.alt = currCardPath; // add the alt so if image can't be fetched, it tells you the value
 
         currCardHtmlObject.innerHTML = ''; // clear any previous card image
         currCardHtmlObject.appendChild(currCardImage); // Set the new card image to the HTML object
@@ -139,7 +139,7 @@ function setupHandListeners() {
 // Add Event Listeners for Selected Cards (Submitted Hand)
 function setupSelectedListeners() {
     for (let i = 1; i <= 5; i++) {
-        const selectedCard = document.getElementById(`submitted-card-${i}`);
+        const selectedCard = document.getElementById(`selected-card-${i}`);
         selectedCard.addEventListener('click', () => deselectCard(i));
     }
 }
@@ -153,7 +153,7 @@ function selectCard(handIndex) {
 
     // Find the next empty slot in the selected cards
     const nextSlotIndex = selectedCards.length + 1; // 1-based index for submitted cards
-    const selectedSlot = document.getElementById(`submitted-card-${nextSlotIndex}`);
+    const selectedSlot = document.getElementById(`selected-card-${nextSlotIndex}`);
 
     // Move the card to the selected pile
     selectedCards.push(hand[handIndex-1]); //add to the selected cards array
@@ -170,7 +170,7 @@ function selectCard(handIndex) {
 }
 
 function deselectCard(selectedIndex){
-    let selectedSlot = document.getElementById(`submitted-card-${selectedIndex}`);
+    let selectedSlot = document.getElementById(`selected-card-${selectedIndex}`);
     let cardImage = selectedSlot.querySelector('img');
 
     if (!cardImage) return;
@@ -187,31 +187,34 @@ function deselectCard(selectedIndex){
     selectedSlot.innerHTML = '';
     
     refillSelectedSlots();
-    console.log('Card deselected from: ', `submitted-card-${selectedIndex}`);
+    console.log('Card deselected from: ', `selected-card-${selectedIndex}`);
 
 }
 
 
 function refillSelectedSlots() {
-    const currentCards = [...selectedCards]; // Copy the current selected cards
-    selectedCards.length = 0; // Clear the original array
 
     // Clear all selected slots
     for (let i = 1; i <= 5; i++) {
-        const slot = document.getElementById(`submitted-card-${i}`);
+        const slot = document.getElementById(`selected-card-${i}`);
         slot.innerHTML = '';
     }
 
     // Re-add cards to the slots in order
-    currentCards.forEach(card => {
-        let index = currentCards.indexOf(card);
-        let slot = document.getElementById(`submitted-card-${index + 1}`);
-        let cardImage = document.createElement('img');
-        cardImage.src = card.pngPath; // Set the card image
-        cardImage.src = '/cards/'.concat(cardImage.src);
-        slot.appendChild(cardImage);
-        selectedCards.push(card); // Rebuild the selectedCards array
-    });
+    for (let i = 0; i < selectedCards.length; i++){
+        let currCard = selectedCards[i]; //Grab the current new card
+        let currCardPath = currCard.pngPath; // Get the path to the image of the card
+        let currCardHtmlObject = document.getElementById(`selected-card-${i+1}`); //Grab the HTML object of the card 
+
+        let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
+        currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
+        console.log("Image source is for selected card ", i, "is ", currCardPath);
+        currCardImage.alt = currCardPath; // add the alt so if image can't be fetched, it tells you the value
+
+        currCardHtmlObject.innerHTML = ''; // clear any previous card image
+        currCardHtmlObject.appendChild(currCardImage); // Set the new card image to the HTML object
+
+    }
 }
 
 

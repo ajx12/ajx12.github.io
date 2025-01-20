@@ -48,7 +48,7 @@ body {
 
 /* Card Rows */
 .joker-cards,
-.submitted-hand,
+.selected-hand,
 .hand {
     display: flex;
     justify-content: center;
@@ -79,7 +79,7 @@ body {
     border-color: red;
 }
 
-.submitted {
+.selected {
     border-color: gray;
 }
 
