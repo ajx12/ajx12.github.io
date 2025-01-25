@@ -159,6 +159,51 @@ function submitHand(){
     return 0;
 }
 
+function sortLowestToHighest(theList){
+    for (let i = 0; i < theList.length; i++){
+        let currentLowest = theList[i];
+        let lowestIndex = i;
+        for (let j = i; j < 5; j++){
+            if (currentLowest > theList[j]){
+                currentLowest = theList[j];
+                lowestIndex = j;
+            }
+        }
+        if (theList[i] != currentLowest){
+            let temp = theList[lowestIndex];
+            theList[lowestIndex] = theList[i];
+            theList[i] = temp;
+        }
+    }
+    console.log("Finished sorting the list from lowest to highest");
+    return theList;
+
+}
+
+function convertSelectedHandToInt(){
+    let theList = [];
+    for (let i = 0; i < selectedCards.length; i++){
+        let currCardRank = selectedCards[i].rank;
+        console.log("card is ", currCardRank);
+        if (currCardRank == 'j'){
+            theList.push(11);
+        }else if (currCardRank == 'q'){
+            theList.push(12);
+        }else if (currCardRank == 'k'){
+            theList.push(13);
+        }else if (currCardRank == 'a'){
+            theList.push(14);
+        }
+        else{
+            theList.push(parseInt(currCardRank, 10));
+        }
+    }
+    console.log("Finished converting hand to int");
+    return theList;
+
+
+}
+
 
 function checkSubmittedHandType(){
     let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full house", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
@@ -172,30 +217,22 @@ function checkSubmittedHandType(){
     let Pair = false;
     let HighCard = true;
     let straightCounter = [];
+
+    //Check for the submission of a single card:
+    if (selectedCards.length == 1){
+        return "High Card";
+    }
+
     //check for Straight Flush
     if (selectedCards.length == 5 && possibleHandTypes.includes("Straight Flush") == true){
         StraightFlush = true;
         let suitToCheck = selectedCards[0].suit;
         Flush = true;
         Straight = true;
+        straightCounter = convertSelectedHandToInt();
         for (let i = 0; i < 5; i++){
-            let currCardRank = selectedCards[i].rank;
-            console.log(currCardRank);
-            if (currCardRank == 'j'){
-                straightCounter.push(11);
-            }else if (currCardRank == 'q'){
-                straightCounter.push(12)
-            }else if (currCardRank == 'k'){
-                straightCounter.push(13)
-            }else if (currCardRank == 'a'){
-                straightCounter.push(14);
-            }
-            else{
-                straightCounter.push(parseInt(currCardRank, 10));
-            }
-
-
             if (selectedCards[i].suit != suitToCheck){ //if the suit doesn't match the first card then flush is false
+                console.log("Not a flush");
                 StraightFlush = false;
                 Flush = false;
                 sfIndex = possibleHandTypes.indexOf("Straight Flush"); // get the index of Straight Flush to remove
@@ -207,21 +244,7 @@ function checkSubmittedHandType(){
         }
         if (Straight == true){
             //Bubble sort the hand for order value
-            for (let i = 0; i < 5; i++){
-                let currentLowest = straightCounter[i];
-                let lowestIndex = i;
-                for (let j = i; j < 5; j++){
-                    if (currentLowest > straightCounter[j]){
-                        currentLowest = straightCounter[j];
-                        lowestIndex = j;
-                    }
-                }
-                if (straightCounter[i] != currentLowest){
-                    let temp = straightCounter[lowestIndex];
-                    straightCounter[lowestIndex] = straightCounter[i];
-                    straightCounter[i] = temp;
-                }
-            }
+            straightCounter = sortLowestToHighest(straightCounter);
             console.log("Sorted list of submitted hand is: ", straightCounter);
 
             for (let i = 0; i < 4; i++){
@@ -258,17 +281,69 @@ function checkSubmittedHandType(){
                 return "Flush";
             }
         }
-        return "Not a StraightFlush, Straight, or Flush";
     }
 
-    console.log("We get here.")
     //Now finished checking for Straight-Flush, Straights, and Flushes.
+
+    // Now check for the rest of the hand types:
+    let pairsList = [];
+    let alreadyChecked = []; //a list to contain the already checked ranks, so you for 3Kind or 4Kind, you don't get 4,3,2 or 3,2 of the same rank in the pairsList
+    let orderedList = convertSelectedHandToInt();
+    orderedList = sortLowestToHighest(orderedList);
+    console.log("Ordered List is: ", orderedList);
+    for (let i = 0; i < orderedList.length; i++){
+        let sameCardCount = 1;
+        let rank = orderedList[i];
+        let j = i+1;
+        while (j < orderedList.length){
+            if (rank == orderedList[j]){
+                sameCardCount++;
+            }
+            j++;
+        }
+        if (sameCardCount > 1 && (alreadyChecked.includes(rank) == false)){
+            alreadyChecked.push(rank);
+            pairsList.push({rank, sameCardCount});
+        }
+    }
+    console.log("The pairs list is: ", pairsList);
+    if (pairsList.length != 0){
+        let highestPairCount = 0
+        let highestPairCountIndex = 0;
+        for (let i = 0; i < pairsList.length; i++){
+            let currentPairCount = pairsList[i].sameCardCount;
+            if (highestPairCount < currentPairCount){
+                highestPairCount = currentPairCount;
+                highestPairCountIndex = i;
+            }
+        }
+
+        if (highestPairCount == 3){
+            if (pairsList.length > 1){
+                return "Full House";
+            }else{
+                return "Three of a Kind";
+            }
+        }
+        if (highestPairCount == 4){
+            return "Four of a Kind";
+        }
+        if (highestPairCount == 2){
+            if (pairsList.length > 1){
+                return "Two Pair";
+            }else{
+                return "Pair";
+            }
+        }
+    }
+
     
     return "High Card";
 
 }
 
 function discardHand(){
+    return 0;
 
 }
 
