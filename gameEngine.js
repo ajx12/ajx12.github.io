@@ -2,12 +2,17 @@
 
 // Global Variables
 let deck = [];       // Array to represent the deck of cards
-let hand = [];       // Array to represent the player's hand#
+let hand = [];       // Array to represent the player's hand
+let handValues = [];
 //let handHtmlObjects = []; // Array to represent the html objects of the hand
 let selectedCards = []; // Array to represent the submitted hand
 //let submittedHandHtmlObjects = []; // Array to represent the html objects of the submitted hand
 let round = 1;       // Current round number
 let cardsLeft = 52;  // Total cards left in the deck (52 by default)
+let submitsLeft = 4;
+let discardsLeft = 3;
+let targetScore = 300;
+let currentScore = 0;
 
 let jokercard1 = document.getElementById('joker-card-1');
 let jokercard2 = document.getElementById('joker-card-2');
@@ -22,6 +27,11 @@ function GameSetup() {
     // Initialize or shuffle the deck
     deck = initializeDeck();
     shuffleDeck(deck);
+    handValues = initializeHandScores();
+    scoreRequiredLabel = document.getElementById("score-required");
+    scoreRequiredLabel.textContent = targetScore;
+    currentScoreLabel = document.getElementById("current-score");
+    currentScoreLabel.textContent = currentScore;
     
     // Draw the initial hand
     DrawCards();
@@ -83,6 +93,9 @@ function NextRound() {
     console.log("Starting the next round...");
     // Increment the round counter
     round++;
+    submitsLeft = 4;
+    discardsLeft = 3;
+    targetScore = targetScore + 150;
     
     // Reset or modify round-specific settings as needed
     selectedCards = [];
@@ -109,6 +122,20 @@ function initializeDeck() {
         }
     }
     return deck;
+}
+
+function initializeHandScores(){
+    let valuesArray = [];
+    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full house", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"];
+    let possibleHandTypesCredits = [100, 60, 40, 35, 30, 30, 20, 10, 5];
+    let possibleHandTypesMults = [8, 7, 4, 4, 4, 3, 2, 2, 1];
+    for (let i = 0; i < possibleHandTypes.length; i++){
+        let type = possibleHandTypes[i];
+        let typeCred = possibleHandTypesCredits[i];
+        let typeMult = possibleHandTypesMults[i];
+        valuesArray.push({type, typeCred, typeMult});
+    }
+    return valuesArray;
 }
 
 // Helper function to shuffle the deck
@@ -154,8 +181,28 @@ function setupButtonListeners() {
 }
 
 function submitHand(){
-    let handType = checkSubmittedHandType();
-    console.log("The handType is: ", handType);
+    let handTypeTuple = checkSubmittedHandType();
+    console.log("The handType is: ", handTypeTuple);
+    let handType = handTypeTuple.handType;
+    const creditsLabel = document.getElementById("credits");
+    const multiplierLabel = document.getElementById("multiplier"); // credits multiplier total-score labels to set to their numeric values
+    const totalScoreLabel = document.getElementById("total-score");
+    for (let i = 0; i < handValues.length; i++){
+        if (handValues[i].type == handType){
+            let typeCred = handValues[i].typeCred + handTypeTuple.value;
+            creditsLabel.textContent = typeCred;
+            let typeMult = handValues[i].typeMult;
+            multiplierLabel.textContent = typeMult;
+            let totalHandScore = typeCred * typeMult;
+            totalScoreLabel.textContent = totalHandScore;
+            currentScore = currentScore + totalHandScore;
+        }
+    }
+    submitsLeft = submitsLeft - 1;
+    let submitsLeftLabel = document.getElementById("submits-left");
+    submitsLeftLabel.textContent = submitsLeft;
+    let currentScoreLabel = document.getElementById("current-score");
+    currentScoreLabel.textContent = currentScore;  
     return 0;
 }
 
@@ -220,7 +267,9 @@ function checkSubmittedHandType(){
 
     //Check for the submission of a single card:
     if (selectedCards.length == 1){
-        return "High Card";
+        let value = parseInt(selectedCards[0].rank, 10);
+        let handType = "High Card"; 
+        return {handType, value};
     }
 
     //check for Straight Flush
@@ -271,14 +320,22 @@ function checkSubmittedHandType(){
 
                 }
             }
+
+            let value = 0;
+            for (let i = 0; i < straightCounter.length; i++){
+                value = value + straightCounter[i];
+            }
             if (StraightFlush == true){
-                return "Straight Flush";
+                let handType = "Straight Flush";
+                return {handType, value};
             }
             if (Straight == true){
-                return "Straight";
+                let handType = "Straight";
+                return {handType, value};
             }
             if (Flush == true){
-                return "Flush";
+                let handType = "Flush";
+                return {handType, value};
             }
         }
     }
@@ -307,6 +364,10 @@ function checkSubmittedHandType(){
         }
     }
     console.log("The pairs list is: ", pairsList);
+    let value = 0;
+    for (let i = 0; i < pairsList.length; i++){
+        value = value + (pairsList[i].rank * pairsList[i].sameCardCount);
+    }
     if (pairsList.length != 0){
         let highestPairCount = 0
         let highestPairCountIndex = 0;
@@ -320,25 +381,34 @@ function checkSubmittedHandType(){
 
         if (highestPairCount == 3){
             if (pairsList.length > 1){
-                return "Full House";
+                let handType = "Full House";
+                return {handType, value};
             }else{
-                return "Three of a Kind";
+                let handType = "Three of a Kind";
+                return {handType, value};
             }
         }
         if (highestPairCount == 4){
-            return "Four of a Kind";
+            let handType = "Four of a Kind";
+            return {handType, value};
         }
         if (highestPairCount == 2){
             if (pairsList.length > 1){
-                return "Two Pair";
+                let handType = "Two Pair";
+                return {handType, value};
             }else{
-                return "Pair";
+                let handType = "Pair";
+                return {handType, value};
             }
         }
     }
 
     
-    return "High Card";
+    let handType = "High Card";
+    // value will be 0, I need to be bothered to do this part, where there's a High Card with multiple cards played
+    return (handType, value);
+
+
 
 }
 

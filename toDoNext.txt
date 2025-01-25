@@ -1,0 +1,13 @@
+Straight Flush = 100 cred, 8 mult
+four of a kind = 60 cre, 7 mult
+Full House = 40 cred, 4 mult
+Flush = 35 cred, 4 mult
+Straight = 30 cred, 4 mult
+3 of a kind = 30 cred, 3 mult
+2 pair = 20 cred, 2 mult
+Pair = 10 cred, 2 mult
+High card = 5 cred, 1 mult
+
+
+remove the cards from the played hand and also remove the same cards from the avalibale hand.
+Then re-populate the available hand with new cards drawn from the deck
