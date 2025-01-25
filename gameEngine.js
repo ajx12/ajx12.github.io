@@ -144,6 +144,136 @@ function setupSelectedListeners() {
     }
 }
 
+// Add Event Listener for Submit & discard buttons
+function setupButtonListeners() {
+    const submitButton = document.getElementById(`submit-button`);
+    submitButton.addEventListener('click', () => submitHand());
+
+    const discardButton = document.getElementById(`discard-button`);
+    discardButton.addEventListener('click', () => discardHand());
+}
+
+function submitHand(){
+    let handType = checkSubmittedHandType();
+    console.log("The handType is: ", handType);
+    return 0;
+}
+
+
+function checkSubmittedHandType(){
+    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full house", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
+    let StraightFlush = false;
+    let Flush = false;
+    let Straight = false;
+    let FourOfAKind = false;
+    let ThreeOfAKind = false;
+    let FullHouse = false;
+    let TwoPair = false;
+    let Pair = false;
+    let HighCard = true;
+    let straightCounter = [];
+    //check for Straight Flush
+    if (selectedCards.length == 5 && possibleHandTypes.includes("Straight Flush") == true){
+        StraightFlush = true;
+        let suitToCheck = selectedCards[0].suit;
+        Flush = true;
+        Straight = true;
+        for (let i = 0; i < 5; i++){
+            let currCardRank = selectedCards[i].rank;
+            console.log(currCardRank);
+            if (currCardRank == 'j'){
+                straightCounter.push(11);
+            }else if (currCardRank == 'q'){
+                straightCounter.push(12)
+            }else if (currCardRank == 'k'){
+                straightCounter.push(13)
+            }else if (currCardRank == 'a'){
+                straightCounter.push(14);
+            }
+            else{
+                straightCounter.push(parseInt(currCardRank, 10));
+            }
+
+
+            if (selectedCards[i].suit != suitToCheck){ //if the suit doesn't match the first card then flush is false
+                StraightFlush = false;
+                Flush = false;
+                sfIndex = possibleHandTypes.indexOf("Straight Flush"); // get the index of Straight Flush to remove
+                possibleHandTypes.splice(sfIndex, 1); // remove (splice) it from the array
+                fIndex = possibleHandTypes.indexOf("Flush"); // get the index of Flush to remove
+                possibleHandTypes.splice(fIndex, 1); // remove it from the array
+            }
+
+        }
+        if (Straight == true){
+            //Bubble sort the hand for order value
+            for (let i = 0; i < 5; i++){
+                let currentLowest = straightCounter[i];
+                let lowestIndex = i;
+                for (let j = i; j < 5; j++){
+                    if (currentLowest > straightCounter[j]){
+                        currentLowest = straightCounter[j];
+                        lowestIndex = j;
+                    }
+                }
+                if (straightCounter[i] != currentLowest){
+                    let temp = straightCounter[lowestIndex];
+                    straightCounter[lowestIndex] = straightCounter[i];
+                    straightCounter[i] = temp;
+                }
+            }
+            console.log("Sorted list of submitted hand is: ", straightCounter);
+
+            for (let i = 0; i < 4; i++){
+                let currentValue = straightCounter[i];
+                let nextValue = straightCounter[i+1];
+
+                if (i==3 && nextValue == 14){
+                    if (Straight == true && currentValue == 5){
+                        Straight = true;
+                        console.log("Straight confirmed with Ace.");
+                    }
+                }
+                else{
+                    if (currentValue + 1 != nextValue){
+                        console.log("Straight unavailable as value ", straightCounter[i], " and value ", straightCounter[i+1], " are too far apart.");
+                        i = 5;
+                        Straight = false;
+                        StraightFlush = false;
+                        let sIndex = possibleHandTypes.indexOf("Straight");
+                        possibleHandTypes.splice(sIndex,1);
+                        let sfIndex = possibleHandTypes.indexOf("Straight Flush"); // get the index of Straight Flush to remove
+                        possibleHandTypes.splice(sfIndex, 1); // remove (splice) it from the array
+                    }
+
+                }
+            }
+            if (StraightFlush == true){
+                return "Straight Flush";
+            }
+            if (Straight == true){
+                return "Straight";
+            }
+            if (Flush == true){
+                return "Flush";
+            }
+        }
+        return "Not a StraightFlush, Straight, or Flush";
+    }
+
+    console.log("We get here.")
+    //Now finished checking for Straight-Flush, Straights, and Flushes.
+    
+    return "High Card";
+
+}
+
+function discardHand(){
+
+}
+
+
+
 function selectCard(handIndex) {
     const handCard = document.getElementById(`hand-card-${handIndex}`);
     const cardImage = handCard.querySelector('img'); // Get the <img> inside the hand card
@@ -224,5 +354,6 @@ function refillSelectedSlots() {
 GameSetup();
 setupHandListeners();
 setupSelectedListeners();
+setupButtonListeners();
 
 roundGameplayLoop();
