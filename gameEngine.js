@@ -126,7 +126,7 @@ function initializeDeck() {
 
 function initializeHandScores(){
     let valuesArray = [];
-    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full house", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"];
+    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"];
     let possibleHandTypesCredits = [100, 60, 40, 35, 30, 30, 20, 10, 5];
     let possibleHandTypesMults = [8, 7, 4, 4, 4, 3, 2, 2, 1];
     for (let i = 0; i < possibleHandTypes.length; i++){
@@ -253,7 +253,7 @@ function convertSelectedHandToInt(){
 
 
 function checkSubmittedHandType(){
-    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full house", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
+    let possibleHandTypes = ["Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
     let StraightFlush = false;
     let Flush = false;
     let Straight = false;
