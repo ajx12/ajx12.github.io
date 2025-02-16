@@ -11,3 +11,26 @@ High card = 5 cred, 1 mult
 
 remove the cards from the played hand and also remove the same cards from the avalibale hand.
 Then re-populate the available hand with new cards drawn from the deck
+
+
+How to remove cards from the played hand:
+
+- go through each of the "played-hand" or submitted or whatever hand html element and remove the picture
+
+- then clear the played hand array
+
+
+How to remove the cards from the available hand:
+
+- go through each "disabled" card in the available-hand html elements and remove their picture
+
+- at the same time when removing a picture, take note of the png image path, and compare it to the available-hand array elements. 
+	- splice the element that matches
+
+
+How to refill the cards missing in the "available" hand:
+
+- append elements from the deck to the end of the available-hand array
+
+- fill in the pictures / set the pictures to be the ones from the array.
+

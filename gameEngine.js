@@ -43,17 +43,8 @@ function GameSetup() {
     console.log("Game setup complete!");
 }
 
-// Function to draw the first 8 cards of the game
-function DrawCards() {
-    console.log("Drawing the first 8 cards...");
-    for (let i = 0; i < 8; i++) {
-        if (deck.length > 0) {
-            hand.push(deck.pop()); // Draw from the top of the deck
-        } else {
-            console.log("Deck is empty!");
-            break;
-        }
-
+function setHandCardImages(){
+    for (let i = 0; i < 8; i++){
         let currCard = hand[i]; //Grab the current new card
         let currCardPath = currCard.pngPath; // Get the path to the image of the card
         let currCardHtmlObject = document.getElementById(`hand-card-${i+1}`); //Grab the HTML object of the card 
@@ -66,14 +57,29 @@ function DrawCards() {
         currCardHtmlObject.innerHTML = ''; // clear any previous card image
         currCardHtmlObject.appendChild(currCardImage); // Set the new card image to the HTML object
     }
+}
+
+
+// Function to draw the first 8 cards of the game
+function DrawCards() {
+    console.log("Drawing the first 8 cards...");
+    for (let i = 0; i < 8; i++) {
+        if (deck.length > 0) {
+            hand.push(deck.pop()); // Draw from the top of the deck
+        } else {
+            console.log("Deck is empty!");
+            break;
+        }
+    }
+    setHandCardImages();
     console.log("Initial hand:", hand);
 }
 
 // Function to replace cards in the hand
-function ReplaceHand(selectedCards) {
+function ReplaceHand(toReplace) {
     console.log("Replacing cards...");
     // Remove selected cards from the hand
-    selectedCards.forEach(card => {
+    toReplace.forEach(card => {
         const index = hand.indexOf(card);
         if (index > -1) {
             hand.splice(index, 1); // Remove the card
@@ -184,6 +190,7 @@ function submitHand(){
     let handTypeTuple = checkSubmittedHandType();
     console.log("The handType is: ", handTypeTuple);
     let handType = handTypeTuple.handType;
+
     const creditsLabel = document.getElementById("credits");
     const multiplierLabel = document.getElementById("multiplier"); // credits multiplier total-score labels to set to their numeric values
     const totalScoreLabel = document.getElementById("total-score");
@@ -202,7 +209,40 @@ function submitHand(){
     let submitsLeftLabel = document.getElementById("submits-left");
     submitsLeftLabel.textContent = submitsLeft;
     let currentScoreLabel = document.getElementById("current-score");
-    currentScoreLabel.textContent = currentScore;  
+    currentScoreLabel.textContent = currentScore;
+
+    // now lets reset the hand and available hand:
+    let cardsToBeRemovedFromHand = [];
+    for (let i = 1; i < (selectedCards.length + 1); i++){
+        let currentSubmittedHandObject = document.getElementById(`selected-card-${i}`);
+        currentSubmittedHandObject.innerHTML = ''; // clear any image from the card slot
+        submittedCardIndexInHand = hand.indexOf(selectedCards[i-1]);
+        cardsToBeRemovedFromHand.push(selectedCards[i-1]);
+        inHandCardObject = document.getElementById(`hand-card-${submittedCardIndexInHand+1}`);
+        inHandCardObject.innerHTML = ''; // clear any image from the in hand card slot too
+        inHandCardObject.style.pointerEvents = 'auto';
+        inHandCardObject.style.opacity = '1';
+    }
+    
+    while (selectedCards.length > 0){
+        selectedCards.pop();
+        console.log("Array of hand indexes to remove is: ", cardsToBeRemovedFromHand);
+        submittedCardIndexInHand = hand.indexOf(cardsToBeRemovedFromHand[cardsToBeRemovedFromHand.length-1]);
+        //hand.splice(cardsToBeRemovedFromHand[cardsToBeRemovedFromHand.length-1], 1);
+        hand.splice(submittedCardIndexInHand, 1);
+        cardsToBeRemovedFromHand.pop();
+    }
+    console.log("Before pushing back on hand, the size of the hand is: ", hand.length);
+    while (hand.length < 8){
+        if (deck.length != 0){
+            console.log("Adding card to hand from deck:", hand.push(deck.pop()));
+        }
+    }
+    console.log(hand);
+    console.log(selectedCards);
+    setHandCardImages();
+    
+    
     return 0;
 }
 
@@ -267,7 +307,8 @@ function checkSubmittedHandType(){
 
     //Check for the submission of a single card:
     if (selectedCards.length == 1){
-        let value = parseInt(selectedCards[0].rank, 10);
+        let valuedCardlist = convertSelectedHandToInt();
+        let value = valuedCardlist[0];
         let handType = "High Card"; 
         return {handType, value};
     }
@@ -405,8 +446,14 @@ function checkSubmittedHandType(){
 
     
     let handType = "High Card";
+    let valuedCardlist = convertSelectedHandToInt();
+    for (let i = 0; i < valuedCardlist.length; i++){
+        if (value < valuedCardlist[i]){
+            value = valuedCardlist[i];
+        }
+    }
     // value will be 0, I need to be bothered to do this part, where there's a High Card with multiple cards played
-    return (handType, value);
+    return {handType, value};
 
 
 
@@ -483,7 +530,7 @@ function refillSelectedSlots() {
 
         let currCardImage = document.createElement('img'); //create the image element to be placed in the current card HTML object
         currCardImage.src = '/cards/'.concat(currCardPath); // Add the card directory to the path.
-        console.log("Image source is for selected card ", i, "is ", currCardPath);
+        //console.log("Image source is for selected card ", i, "is ", currCardPath);
         currCardImage.alt = currCardPath; // add the alt so if image can't be fetched, it tells you the value
 
         currCardHtmlObject.innerHTML = ''; // clear any previous card image
